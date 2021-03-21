@@ -1,4 +1,4 @@
-export function getValueString(value: number) {
+export function getValueAsString(value: number) {
   if (Number.isNaN(value)) {
     return "Nan";
   } else if (!Number.isFinite(value)) {
