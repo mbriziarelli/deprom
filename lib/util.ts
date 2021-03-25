@@ -1,3 +1,5 @@
+import { LabelValues } from "./metric.ts";
+
 export function getValueAsString(value: number) {
   if (Number.isNaN(value)) {
     return "Nan";
@@ -36,8 +38,11 @@ export function setValue(
   return hashMap;
 }
 
-export function getLabels(labelNames: string[], args: unknown[]) {
-  if (typeof args[0] === "object") {
+export function getLabels(
+  labelNames: string[],
+  args: IArguments,
+): LabelValues {
+  if (isLabelValues(args[0])) {
     return args[0];
   }
 
@@ -47,8 +52,13 @@ export function getLabels(labelNames: string[], args: unknown[]) {
 
   const argsAsArray = Array.prototype.slice.call(args);
 
-  return labelNames.reduce<Record<string, unknown>>((acc, label, index) => {
-    acc[label] = argsAsArray[index];
+  return labelNames.reduce<LabelValues>((acc, label, index) => {
+    const value = argsAsArray[index];
+
+    if (isNumber(value) || isString(value)) {
+      acc[label] = argsAsArray[index];
+    }
+
     return acc;
   }, {});
 }
@@ -73,8 +83,26 @@ export function hashObject(labels: Record<string, unknown>) {
   return hash;
 }
 
+export function isNumber(obj: unknown): obj is number {
+  return typeof obj === "number";
+}
+
+export function isString(obj: unknown): obj is string {
+  return typeof obj === "string";
+}
+
 export function isObject(obj: unknown): obj is Record<string, unknown> {
-  return obj === Object(obj);
+  return typeof obj === "object" && obj !== null;
+}
+
+export function isLabelValues(obj: unknown): obj is LabelValues {
+  if (isObject(obj)) {
+    return Object.keys(obj).every((key) =>
+      isString(obj[key]) || isNumber(obj[key])
+    );
+  }
+
+  return false;
 }
 
 export class Grouper<K, V> extends Map<K, V[]> {

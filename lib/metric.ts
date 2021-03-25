@@ -14,38 +14,40 @@ export enum MetricType {
   Summary,
 }
 
-export type CollectFunction<T> = (this: T) => void | Promise<void>;
+export type LabelValues = Record<string, string | number>;
+
+export type CollectFunction = <T>(this: T) => void | Promise<void>;
 
 export interface metric {
   name: string;
   help: string;
   type: MetricType;
   aggregator: Aggregator;
-  collect: CollectFunction<any>;
+  collect: CollectFunction;
 }
 
-interface MetricConfiguration<T extends string> {
+export interface MetricConfiguration {
   name: string;
   help: string;
-  labelNames?: T[] | readonly T[];
+  labelNames?: string[];
   registers?: Registry[];
   aggregator?: Aggregator;
-  collect?: CollectFunction<any>;
+  collect?: CollectFunction;
 }
 
 /**
  * @abstract
  */
-export class Metric<T extends string> {
+export class Metric {
   name = "";
   help = "";
-  labelNames: T[] | readonly T[] = [];
+  labelNames: string[] = [];
   registers: Registry[] = [globalRegistry];
   aggregator: Aggregator = "sum";
-  collect?: CollectFunction<any>;
+  collect?: CollectFunction;
 
   constructor(
-    config: MetricConfiguration<T>,
+    config: MetricConfiguration,
     defaults: Record<string, unknown> = {},
   ) {
     if (!isObject(config)) {

@@ -8,11 +8,11 @@ import { metric } from "./metric.ts";
 /**
  * General metric type
  */
-type Metric<T extends string> =
-  | Counter<T>
-  | Gauge<T>
-  | Summary<T>
-  | Histogram<T>;
+type Metric =
+  | Counter
+  | Gauge
+  | Summary
+  | Histogram;
 
 function escapeString(str: string) {
   return str.replace(/\n/g, "\\n").replace(/\\(?!n)/g, "\\\\");
@@ -30,14 +30,14 @@ function escapeLabelValue(str: unknown) {
  * Container for all registered metrics
  */
 export class Registry {
-  private _metrics: Record<string, Metric<string>> = {};
+  private _metrics: Record<string, Metric> = {};
   private _defaultLabels: Record<string, string> = {};
 
-  getMetricsAsArray<T extends string>(): Metric<T>[] {
+  getMetricsAsArray(): Metric[] {
     return Object.values(this._metrics);
   }
 
-  async getMetricAsPrometheusString<T extends string>(metric: Metric<T>) {
+  async getMetricAsPrometheusString(metric: Metric) {
     const item = await metric.get();
     const name = escapeString(item.name);
     const help = `# HELP ${name} ${escapeString(item.help)}`;
@@ -97,7 +97,7 @@ export class Registry {
 	 * Register metric to register
 	 * @param metric Metric to add to register
 	 */
-  registerMetric<T extends string>(metric: Metric<T>): void {
+  registerMetric(metric: Metric): void {
     if (this._metrics[metric.name] && this._metrics[metric.name] !== metric) {
       throw new Error(
         `A metric with the name ${metric.name} has already been registered.`,
@@ -169,7 +169,7 @@ export class Registry {
 	 * Get a single metric
 	 * @param name The name of the metric
 	 */
-  getSingleMetric<T extends string>(name: string): Metric<T> | undefined {
+  getSingleMetric(name: string): Metric | undefined {
     return this._metrics[name];
   }
 
@@ -202,10 +202,10 @@ export class Registry {
 	 * Merge registers
 	 * @param registers The registers you want to merge together
 	 */
-  static merge<T extends string>(registers: Registry[]): Registry {
+  static merge(registers: Registry[]): Registry {
     const mergedRegistry = new Registry();
 
-    const metricsToMerge = registers.reduce<Metric<T>[]>(
+    const metricsToMerge = registers.reduce<Metric[]>(
       (acc, reg) => acc.concat(reg.getMetricsAsArray()),
       [],
     );

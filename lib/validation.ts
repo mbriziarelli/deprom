@@ -1,3 +1,5 @@
+import { LabelValues } from "./metric.ts";
+
 // These are from https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels
 const metricRegexp = /^[a-zA-Z_:][a-zA-Z0-9_:]*$/;
 const labelRegexp = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
@@ -16,7 +18,10 @@ export const validateLabelName = (names: string[] | readonly string[]) => {
   return valid;
 };
 
-export const validateLabel = (savedLabels: string[], labels: string[]) =>
+export const validateLabel = (
+  savedLabels: string[],
+  labels: LabelValues,
+) =>
   Object.keys(labels).forEach((label) => {
     if (savedLabels.indexOf(label) === -1) {
       throw new Error(
