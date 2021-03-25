@@ -1,24 +1,16 @@
-/**
- * Prometheus client
- * @module Prometheus client
- */
+import { globalRegistry } from "./lib/registry.ts";
 
-exports.register = require("./lib/registry").globalRegistry;
-exports.Registry = require("./lib/registry");
-exports.contentType = require("./lib/registry").globalRegistry.contentType;
-exports.validateMetricName = require("./lib/validation").validateMetricName;
+const contentType = globalRegistry.contentType;
 
-exports.Counter = require("./lib/counter");
-exports.Gauge = require("./lib/gauge");
-exports.Histogram = require("./lib/histogram");
-exports.Summary = require("./lib/summary");
-exports.Pushgateway = require("./lib/pushgateway");
-
-exports.linearBuckets = require("./lib/bucketGenerators").linearBuckets;
-exports.exponentialBuckets =
-  require("./lib/bucketGenerators").exponentialBuckets;
-
-exports.collectDefaultMetrics = require("./lib/defaultMetrics");
-
-exports.aggregators = require("./lib/metricAggregators").aggregators;
-exports.AggregatorRegistry = require("./lib/cluster");
+export { contentType, globalRegistry };
+export { Registry } from "./lib/registry.ts";
+export { validateMetricName } from "./lib/validation.ts";
+export { Counter } from "./lib/counter.ts";
+export { Gauge } from "./lib/gauge.ts";
+export { Histogram } from "./lib/histogram.ts";
+export { Summary } from "./lib/summary.ts";
+export { Pushgeteway } from "./lib/pushgateway.ts";
+export { exponentialBuckets, linearBuckets } from "./lib/bucketGenerators.ts";
+export { collectDefaultMetrics } from "./lib/defaultMetrics.ts";
+export { aggregators } from "./lib/metricAggregators.ts";
+export { AggregatorRegistry } from "./lib/cluster.ts";
